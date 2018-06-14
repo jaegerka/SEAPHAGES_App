@@ -4,17 +4,32 @@
 
 import { Mongo } from 'meteor/mongo';
 
-const FakeSamples = new Mongo.Collection('fakeSamples');
+const Samples = new Mongo.Collection('samples');
 
 Meteor.methods({
-    'FakeSamples.addOne': ( newSample ) => {
-        return FakeSamples.insert( newSample );
+    'Samples.addOne': ( newSample ) => {
+        return Samples.insert( newSample );
     },
+    'Samples.updateOne': ( updatedSample ) => {
+        console.log(updatedSample)
+        return Samples.update( {"_id": updatedSample._id}, {
+            $set: {
+                "title": updatedSample.title,
+                "lat": updatedSample.lat,
+                "lng": updatedSample.lng,
+                "date": updatedSample.date,
+                "description": updatedSample.description
+            }
+        });
+    },
+    'Samples.removeOne': ( remove_id ) => {
+        return Samples.remove( {"_id": remove_id._id} );
+    },
+    },
+);
+
+Meteor.publish('samples', () => {
+    return Samples.find();
 });
 
-Meteor.publish('fakeSamples', () => {
-    return FakeSamples.find();
-});
-
-export default ( FakeSamples );
-
+export default ( Samples );
